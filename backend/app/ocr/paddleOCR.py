@@ -15,7 +15,7 @@ def process_paddleocr():
         rec_model_dir='paddle_models/en_PP-OCRv3_rec_infer',
         cls_model_dir='paddle_models/ch_ppocr_mobile_v2.0_cls_infer',
         use_angle_cls=True,
-        lang='en'
+        lang='nl'  # Language is now set to Dutch for recognizing Dutch invoices
     )
     img = load_image()
     ocr_method = 'PaddleOCR'
@@ -27,7 +27,7 @@ def process_paddleocr():
     average_confidence, text = process_paddleocr_text(result)
 
     start_time_parsing = time.time()
-    parsed_data = parse_text(text)
+    parsed_data = parse_text(text)  # Adjusted parser for Dutch invoice fields
     parsing_time = time.time() - start_time_parsing
 
     response = {
@@ -40,6 +40,7 @@ def process_paddleocr():
         'average_confidence': average_confidence * 100
     }
 
+    # Check if the parsed data contains invoice-related fields and add it to the database
     if check_if_invoice(parsed_data):
         pdf_file, image_file = get_files_from_request()
         invoice_id = add_invoice_to_db(parsed_data, text, pdf_file, image_file,
